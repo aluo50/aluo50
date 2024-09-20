@@ -8,7 +8,8 @@ def readfile(file_name):
     
     with open(file_name, mode='r') as file:
         data = csv.reader(file)
-      # we removed the first line of the csv  
+        next(data)
+      # skips first line
         for row in data:
             
             occupation = row[0]
@@ -17,8 +18,8 @@ def readfile(file_name):
             percentages.append(percentage)
         
         
-        occupations = occupations[0:-2]
-        percentages = percentages[0:-2]
+        occupations = occupations[0:-1]
+        percentages = percentages[0:-1]
         
     return occupations, percentages
 
@@ -29,8 +30,8 @@ def chooseOccupation(occupations, percentages):
     for i in range(len(occupations)):
         percentage += percentages[i]
         if (rand < percentage):
-            return occupations[i], percentages[i]
-            percentage = 0
+            return occupations[i], percentages[i] * 100
+            
 
 occupations, percentages = readfile('occupations.csv')
 print(chooseOccupation(occupations, percentages))
