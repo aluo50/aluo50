@@ -1,0 +1,30 @@
+Alex Luo
+TummyAKE
+
+DISCO:
+* werkzeug.exceptions.BadRequestKeyError: 400 Bad Request: The browser (or proxy) sent a request that this server could not understand.
+KeyError: 'username' is the error message received when lines are uncommented. The site does not run properly due to a KeyError. 
+* This is because print(request.args['username']) wants a username key from request.args that doesn't yet exist. 
+* 
+-----------------------------------------------------------------------
+
+
+Q/C/C:
+* What's the point of the testmod0.py file?
+* What does DIAG mean?
+* 
+-----------------------------------------------------------------------
+
+
+OTHER?
+* 
+* 
+* 
+-----------------------------------------------------------------------
+
+
+
+
+
+
+
