@@ -1,0 +1,37 @@
+Tawab Berri
+The Duo-lingos - Tawab Berri, Jacob Lukose, Jack Blair
+SoftDev
+2024-10-07
+K14 - Analyzing the different parts of a user's interactions with a server (i.e. requests), and their causes and effects
+time spent: .3 hrs
+
+DISCO:
+* no changes to code: printed "this print statement came from test module"
+* with all the lines uncommented, the user is met with a BadRequestKeyError: 
+werkzeug.exceptions.BadRequestKeyError: 400 Bad Request: The browser (or proxy) sent a request that this server could not understand.
+KeyError: 'username'
+* the code executed correctly when the pair of lines that referenced the "username" variable in the 
+loginpage were commented out, because this variable has no definition until it is assigned to it
+when the user actually inputs a username.
+-----------------------------------------------------------------------
+
+
+Q/C/C:
+* 
+* 
+* 
+-----------------------------------------------------------------------
+
+
+OTHER?
+* 
+* 
+* 
+-----------------------------------------------------------------------
+
+
+
+
+
+
+
