@@ -1,0 +1,24 @@
+Set requests for username to requests for cookie usernames
+Add a password
+Ask flask for username/password cookies instead of username in generall
+-- > If username is empty, send us to the login site
+-- > If username is NOT empty, send us to the secret key
+
+request.cookies.get( KEY )
+
+ex:
+request.cookies.get('username')
+
+C --> Cookie
+S --> Session
+
+app.secret_key = <rndm string> 
+
+import os
+os.urandom(32) -- > 32 bits of random data as a string
+
+from flask import session
+...
+
+session[KEY[ = value
+session.pop(key)
