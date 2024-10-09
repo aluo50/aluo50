@@ -20,5 +20,5 @@ os.urandom(32) -- > 32 bits of random data as a string
 from flask import session
 ...
 
-session[KEY[ = value
+session[KEY] = value
 session.pop(key)
