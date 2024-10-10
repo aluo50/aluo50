@@ -75,12 +75,12 @@ def authenticate():
     #print(request.args['username'])
     #print("***DIAG: request.headers ***")
     #print(request.headers)
-    username = request.form.get('username')
+    username = request.cookies.get('username') 
     if username:
         session['username'] = username
         return render_template('response.html', user=username, form = 'POST')
     else:
-        return render_template('login.html')  #response to a form submissio
+        return render_template('login.html')  #response to a form submission
 
 @app.route("/secret")
 def secret_key():
@@ -95,7 +95,6 @@ def logout():
     return render_template('login.html')
 
 
-    
 if __name__ == "__main__": #false if this file imported as module
     #enable debugging, auto-restarting of server when this file is modified
     app.debug = True 
