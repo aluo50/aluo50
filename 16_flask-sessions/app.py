@@ -1,5 +1,5 @@
 '''
-Alex Luo, Kishi
+Alex Luo, Kishi, Eve 
 SoftDev
 2024-10-08
 K15 - Analyzing the different forms of server responses of user inputs.
@@ -75,10 +75,11 @@ def authenticate():
     #print(request.args['username'])
     #print("***DIAG: request.headers ***")
     #print(request.headers)
-    username = request.cookies.get('username') 
+    username = request.form.get('username') 
     if username:
         session['username'] = username
         return render_template('response.html', user=username, form = 'POST')
+        
     else:
         return render_template('login.html')  #response to a form submission
 
