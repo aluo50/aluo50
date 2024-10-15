@@ -1,5 +1,5 @@
 '''
-Alex Luo, Kishi, Eve 
+Alex Luo, Kishi, Eve
 SoftDev
 2024-10-08
 K15 - Analyzing the different forms of server responses of user inputs.
@@ -30,7 +30,7 @@ trioTASK:
 ~~~~~~~~~~~ BEFORE RUNNING THIS, ~~~~~~~~~~~~~~~~~~
 ...read for understanding all of the code below.
  * Some will work as written;
- *  ...other sections will not. 
+ *  ...other sections will not.
 
 TASK:
  Predict which.
@@ -47,39 +47,17 @@ PROTIP: Insert your own in-line comments
 
 @app.route("/", methods=['GET', 'POST'])
 def disp_loginpage():
-    #print("one\n\n\n")
-    #print("***DIAG: this Flask obj ***")
-    #print(app)
-    #print("***DIAG: request obj ***")
-    #print(request)
-    #print("***DIAG: request.args ***")
-    #print(request.args)
-    #print("***DIAG: request.args['username']  ***") this pair doesnt work because the variable "username" probably hasnt been defined yet.
-    #print(request.args['username'])
-    #print("***DIAG: request.headers ***")
-    #print(request.headers)
-    username = session.get('username')
+    username = session.get('username') #gets session username
     return render_template('login.html', username=username)
 
 
 @app.route("/auth", methods=['POST'])
 def authenticate():
-    #print("\ntwo\n\n\n")
-    #print("***DIAG: this Flask obj ***")
-    #print(app)
-    #print("***DIAG: request obj ***")
-    #print(request)
-    #print("***DIAG: request.args ***")
-    #print(request.args)
-    #print("***DIAG: request.args['username']  ***")
-    #print(request.args['username'])
-    #print("***DIAG: request.headers ***")
-    #print(request.headers)
-    username = request.form.get('username') 
+    username = request.form['username']
     if username:
         session['username'] = username
         return render_template('response.html', user=username, form = 'POST')
-        
+
     else:
         return render_template('login.html')  #response to a form submission
 
@@ -89,14 +67,14 @@ def secret_key():
     if username:
         return render_template('response.html', user=username, form ='session')
     return render_template('login.html')
-    
+
 @app.route("/logout")
 def logout():
-    session.pop('username')
+    session.pop('username', None)
     return render_template('login.html')
 
 
 if __name__ == "__main__": #false if this file imported as module
     #enable debugging, auto-restarting of server when this file is modified
-    app.debug = True 
+    app.debug = True
     app.run()
