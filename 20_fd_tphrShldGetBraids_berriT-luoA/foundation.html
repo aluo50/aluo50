@@ -7,6 +7,7 @@
     <meta charset = "utf-8" />
     <meta http-equiv = "x-ua-compatible" content = "ie = edge" />
     <meta name = "viewport" content = "width = device-width, initial-scale = 1.0" />
+    <title>Foundation Features</title>
     <link rel = "stylesheet" href = "https://cdnjs.cloudflare.com/ajax/libs/foundation/6.0.1/css/foundation.css">
     <script src = "https://cdnjs.cloudflare.com/ajax/libs/foundation/6.0.1/js/vendor/jquery.min.js"></script>
     <script src = "https://cdnjs.cloudflare.com/ajax/libs/foundation/6.0.1/js/foundation.min.js"></script>
@@ -14,33 +15,61 @@
   </head>
 
 
-  <body>
-    <p>foundation has these cool accordions have vertical tabs that expand and collapse data</p>
-    <br></br>
-
-
-
 
 
 
 
    <body>
+      <h1>showcasing foundation features</h1>
       <h2>Accordion Example</h2>
       <ul class = "accordion" data-accordion role = "tablist">
          <li class = "accordion-item is-active">
             <a href = "#collapse1" role = "tab" class = "accordion-title" id = "collapse1-heading">Foundation</a>
             <div id = "collapse1" class = "accordion-content" role = "tabpanel" data-tab-content aria-labelledby = "panel1d-heading">
-               The most advanced responsive front-end framework.
+               foundation is a front end framework.
             </div>
          </li>
 
          <li class = "accordion-item">
             <a href = "#collapse3" role = "tab" class = "accordion-title" id = "collapse3-heading">HTML</a>
             <div id = "collapse3" class = "accordion-content" role = "tabpanel" data-tab-content aria-labelledby = "panel1d-heading">
-               HTML is a markup language for describing web documents.
+               html is cool.
             </div>
          </li>
       </ul>
+
+      <h2>Buttons</h2>
+      <button class="button">Basic Button</button>
+      <button class="button success">Success Button</button>
+      <button class="button alert">Alert Button</button>
+
+      <h2>Grid System</h2>
+      <div class="row">
+         <div class="small-4 columns">
+           <p>4 Columns</p>
+         </div>
+         <div class="small-4 columns">
+            <p>4 Columns</p>
+         </div>
+         <div class="small-4 columns">
+            <p>4 Columns</p>
+         </div>
+      </div>
+
+      <h2>Modal (Reveal)</h2>
+      <button class="button" data-open="exampleModal1">Open Modal</button>
+      <div class="reveal" id="exampleModal1" data-reveal>
+         <h1>Foundation Modal</h1>
+         <p>This is a modal made with foundation.</p>
+         <button class="close-button" data-close aria-label="Close modal">&times;</button>
+      </div>
+
+      <h2>Tooltip</h2>
+      <p>
+        Hover over this
+        <span data-tooltip aria-haspopup="true" data-position="top" class="has-tip" title="Foundation Tooltip">text</span>
+        to see a tooltip.
+      </p>
 
       <script>
          $(document).ready(function() {
