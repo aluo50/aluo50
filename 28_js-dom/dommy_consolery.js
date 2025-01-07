@@ -1,6 +1,6 @@
 /*
   your PPTASK:
-  
+
   First, familiarize yourself with the given html file for this work.
 
       then...
@@ -12,15 +12,15 @@
   or otherwise deem notable.
 
   Have the given html file open as you work.
-  
+
   Write with your future self or teammates in mind.
-  
-  If you find yourself falling out of flow mode, consult 
+
+  If you find yourself falling out of flow mode, consult
   - other teams
   - MDN
 
   A few comments have been pre-filled for you...
-  
+
   (delete this block comment once you are done)
 */
 
@@ -28,7 +28,7 @@
 
 
 
-// Team Phantom Tollbooth :: Clyde Sinclair, Fierce Dragon 
+// Team Phantom Tollbooth :: Clyde Sinclair, Fierce Dragon
 // SoftDev pd0
 // K28 -- Getting more comfortable with the dev console and the DOM
 // 2025-01-07t
@@ -44,11 +44,14 @@ var j = 20;
 
 
 //assign an anonymous fxn to a var
-var f = function(x) 
+var f = function(x)
 {
     var j=30;
     return j+x;
 };
+
+console.log(f(5));
+// Can test functions using console log to print the output
 
 
 //instantiate an object
@@ -60,6 +63,8 @@ var o = { 'name' : 'Thluffy',
               return x+30;
           }
         };
+
+console.log(o); // creates new object
 
 //create a new node in the tree
 var addItem = function(text)
@@ -113,5 +118,3 @@ const myFxn = (param1, param2) => {
     // body
     return retVal;
 };
-
-
