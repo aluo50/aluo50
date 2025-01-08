@@ -1,35 +1,5 @@
-/*
-  your PPTASK:
-
-  First, familiarize yourself with the given html file for this work.
-
-      then...
-
-  Test drive each bit of code in this file,
-  and insert comments galore, indicating anything
-  you discover,
-  have questions about,
-  or otherwise deem notable.
-
-  Have the given html file open as you work.
-
-  Write with your future self or teammates in mind.
-
-  If you find yourself falling out of flow mode, consult
-  - other teams
-  - MDN
-
-  A few comments have been pre-filled for you...
-
-  (delete this block comment once you are done)
-*/
-
-
-
-
-
-// Team Phantom Tollbooth :: Clyde Sinclair, Fierce Dragon
-// SoftDev pd0
+// Team Grizzly :: Alex Luo and Stanley Hoo 
+// SoftDev pd4
 // K28 -- Getting more comfortable with the dev console and the DOM
 // 2025-01-07t
 // --------------------------------------------------
@@ -64,30 +34,30 @@ var o = { 'name' : 'Thluffy',
           }
         };
 
-console.log(o); // creates new object
+//console.log(o); // logs the object 'o' to console 
 
 //create a new node in the tree
 var addItem = function(text)
 {
-    var list = document.getElementById("thelist");
-    var newitem = document.createElement("li");
-    newitem.innerHTML = text;
-    list.appendChild(newitem);
+    var list = document.getElementById("thelist"); // selects ordered list element with id "thelist"
+    var newitem = document.createElement("li"); // creates a new list item element
+    newitem.innerHTML = text; // sets inner HTML of new list item
+    list.appendChild(newitem); // appends new list item to list
 };
 
 //prune a node from the tree
 var removeItem = function(n)
 {
     var listitems = document.getElementsByTagName('li');
-    listitems[n].remove();
+    listitems[n].remove(); // removes the nth list item 
 };
 
 //color selected elements red
 var red = function()
 {
     var items = document.getElementsByTagName("li");
-    for(var i = 0; i < items.length; i++) {
-	items[i].classList.add('red');
+    for(var i = 0; i < items.length; i++) { // adds 'red' class to each item in list
+	items[i].classList.add('red'); 
     }
 };
 
@@ -95,7 +65,7 @@ var red = function()
 var stripe = function()
 {
     var items = document.getElementsByTagName("li");
-    for(var i = 0; i < items.length; i++) {
+    for(var i = 0; i < items.length; i++) { // alternates between adding 'red' and 'blue' classes
 	if (i%2==0) {
 	    items[i].classList.add('red');
 	} else {
@@ -107,8 +77,40 @@ var stripe = function()
 
 //insert your implementations here for...
 // FIB
+function fact(n){
+    let product = n;
+    if (n===0){
+      return 1;
+    }
+    for (i=n-1; i>0; i-=1){
+      product *= i;
+    }
+    return product;
+  }
 // FAC
+function fib(n){
+    if (n===0){
+      return 0;
+    }
+    else if (n===1){
+      return 1;
+    }
+    else if (n===2){
+      return 1;
+    }
+    else {
+      return fib(n-1) + fib(n-2);
+    }
+}
 // GCD
+function gcd(a,b){
+    if (b===0){
+        return a;
+    }
+    else{
+        return gcd(b, (a%b));
+    }
+}
 
 
 // In addition to the style shown above,
@@ -116,5 +118,9 @@ var stripe = function()
 //  Note anything notable.
 const myFxn = (param1, param2) => {
     // body
-    return retVal;
+    return param1 + param2;
 };
+
+console.log(myFxn(5,10));
+addItem("fact of 5: " + fact(5));
+stripe();
