@@ -3,27 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
-</head>
 <body>
-    <h1>Welcome to the Weblog</h1>
-    {% if user %}
-        <p>Hello, {{ user.username }}!</p>
-        <a href="{{ url_for('create_blog') }}">Create Blog</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
-        <h2>Your Blogs</h2>
-        {% for blog in user.blogs %}
-            <h3><a href="{{ url_for('view_blog', blog_id=blog.id) }}">{{ blog.title }}</a></h3>
-            <p>{{ blog.date_posted.strftime('%Y-%m-%d') }}</p>
-            <a href="{{ url_for('edit_blog', blog_id=blog.id) }}">Edit</a>
-        {% endfor %}
-        <h2>Other Users' Blogs</h2>
-        {% for other_user in User.query.filter(User.id != user.id).all() %}
-            <h3>{{ other_user.username }}</h3>
-            <a href="{{ url_for('user_blogs', user_id=other_user.id) }}">View Blogs</a>
-        {% endfor %}
-    {% else %}
-        <a href="{{ url_for('login') }}">Login</a>
-        <a href="{{ url_for('register') }}">Register</a>
-    {% endif %}
+    <div class="container">
+        <h1>Welcome to the Weblog</h1>
+        {% if user %}
+            <p>Hello, {{ user[1] }}!</p>
+            <a href="{{ url_for('create_blog') }}">Create Blog</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+            <h2>Your Blogs</h2>
+            {% for blog in blogs %}
+                <h3><a href="{{ url_for('view_blog', blog_id=blog[0]) }}">{{ blog[1] }}</a></h3>
+                <p>{{ blog[2] }}</p>
+                <a href="{{ url_for('edit_blog', blog_id=blog[0]) }}">Edit</a>
+            {% endfor %}
+            <h2>Other Users' Blogs</h2>
+            {% for other_user in other_users %}
+                <h3>{{ other_user[1] }}</h3>
+                <a href="{{ url_for('user_blogs', user_id=other_user[0]) }}">View Blogs</a>
+            {% endfor %}
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}">Register</a>
+        {% endif %}
+    </div>
 </body>
 </html>

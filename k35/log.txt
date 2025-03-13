@@ -7,3 +7,4 @@ q1: Did you catch any errors? If so, how did you notice, and what did you do?
 q2:
 c1: copilot wouldn't respond unless if I let it access public code
 c2: copilot added multiline comment symbols around all generated code: ```[code]```
+c3: when sending a prompt with a large project/many requests (broad), copilot when typically fail to correctly address all points

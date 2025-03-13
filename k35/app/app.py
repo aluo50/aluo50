@@ -33,6 +33,7 @@ def init_db():
 @app.route('/')
 def home():
     user = None
+    blogs = []
     if 'user_id' in session:
         conn = sqlite3.connect('weblog.db')
         cursor = conn.cursor()
@@ -41,8 +42,7 @@ def home():
         cursor.execute('SELECT * FROM Blog WHERE user_id = ?', (session['user_id'],))
         blogs = cursor.fetchall()
         conn.close()
-        return render_template('home.html', user=user, blogs=blogs)
-    return render_template('home.html')
+    return render_template('home.html', user=user, blogs=blogs)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -51,14 +51,26 @@ def register():
         email = request.form['email']
         password = request.form['password']
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+
         conn = sqlite3.connect('weblog.db')
         cursor = conn.cursor()
+
+        # Check if the email already exists
+        cursor.execute('SELECT * FROM User WHERE email = ?', (email,))
+        existing_user = cursor.fetchone()
+
+        if existing_user:
+            flash('Email already registered. Please use a different email.', 'danger')
+            return render_template('register.html')
+
         cursor.execute('INSERT INTO User (username, email, password) VALUES (?, ?, ?)', (username, email, hashed_password))
         conn.commit()
         user_id = cursor.lastrowid
         conn.close()
+
         session['user_id'] = user_id
         return redirect(url_for('home'))
+
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
