@@ -1,0 +1,2 @@
+Devo nation: create a flask app that is a weblog hosting site that allow users to register and login. Once they are logged in they will be able to create a new blog, update their blog by adding a new entry, view and edit their own past entry, and view the blogs of other users. They will not be able edit other users blogs. SQLite3 will serve as the backend data storage system. :
+AI:Below is the implementation of a Flask web application that meets the requirements specified: -proceeds to give me all of the code in separate files-
