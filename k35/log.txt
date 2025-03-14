@@ -11,4 +11,4 @@ c3: when sending a prompt with a large project/many requests (broad), copilot wh
 C4: told us to use SQLAlchemy and a cypher that didn't even work
 c5: when prompting with the repo attached, copilot completely misreads the repo (if it's too broad), and sends incorrect info
 c6: sent javascript when python was sent
-
+c7: doesn't compartmentalize code into efficient files (does middleware and backend in the same file i.e. database in flask file)
