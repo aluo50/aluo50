@@ -32,15 +32,19 @@ def init_db():
 
 @app.route('/')
 def home():
+    conn = sqlite3.connect('weblog.db')
+    cursor = conn.cursor()
+    # Fetch all blogs, sorted by most recent
+    cursor.execute('SELECT * FROM Blog ORDER BY date_posted DESC')
+    blogs = cursor.fetchall()
+    conn.close()
+    
     user = None
-    blogs = []
     if 'user_id' in session:
         conn = sqlite3.connect('weblog.db')
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM User WHERE id = ?', (session['user_id'],))
         user = cursor.fetchone()
-        cursor.execute('SELECT * FROM Blog WHERE user_id = ?', (session['user_id'],))
-        blogs = cursor.fetchall()
         conn.close()
     return render_template('home.html', user=user, blogs=blogs)
 
@@ -116,7 +120,7 @@ def edit_blog(blog_id):
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM Blog WHERE id = ?', (blog_id,))
     blog = cursor.fetchone()
-    if blog[4] != session['user_id']:
+    if not blog or blog[4] != session.get('user_id'):
         conn.close()
         return redirect(url_for('home'))
     if request.method == 'POST':
@@ -144,7 +148,7 @@ def user_blogs(user_id):
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM User WHERE id = ?', (user_id,))
     user = cursor.fetchone()
-    cursor.execute('SELECT * FROM Blog WHERE user_id = ?', (user_id,))
+    cursor.execute('SELECT * FROM Blog WHERE user_id = ? ORDER BY date_posted DESC', (user_id,))
     blogs = cursor.fetchall()
     conn.close()
     return render_template('user_blogs.html', user=user, blogs=blogs)

@@ -8,3 +8,7 @@ Devo nation:jinja2.exceptions.UndefinedError: 'User' is undefined {% for other_u
 AI:The error jinja2.exceptions.UndefinedError: 'User' is undefined occurs because the User model is not available in the template context. In your current Flask setup, you are using raw SQLite queries, which do not directly provide the ORM functionality of SQLAlchemy. -proceeds to fix home once again-
 Devo nation: error arises from line 145 in view blog: return render_template('view_blog.html', blog=blog)
 AI:The error jinja2.exceptions.UndefinedError: 'tuple object' has no attribute 'date_posted' occurs because you are accessing blog.date_posted as if it were an attribute of an object, but it is actually a tuple returned from the SQLite query. -proceeds to fix view_blog-
+Devo nation: create a readme.md file for this project
+AI: -proceeds to write readme-
+Devo nation: Please fix the login route such that it works. Also please make sure all users will be able to view all blogs (their own and other peoples blogs), and also, when a user edits his blogs, he should just be able to click edit on the entity of that blog he wants to edit. Also please add styling to the site in a styles.css - make a modern green and blue with box shadowing and a nav bar. Also make sure the routes work and are integrated correctly.  -with app attached-
+AI: Below is an example of a complete update to the project that addresses your requirements. -sends unrelated javascript-
