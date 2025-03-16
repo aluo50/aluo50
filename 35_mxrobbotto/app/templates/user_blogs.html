@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ user.username }}'s Blogs</title>
+</head>
+<body>
+    <h1>{{ user.username }}'s Blogs</h1>
+    {% for blog in user.blogs %}
+        <h3><a href="{{ url_for('view_blog', blog_id=blog.id) }}">{{ blog.title }}</a></h3>
+        <p>{{ blog.date_posted.strftime('%Y-%m-%d') }}</p>
+    {% endfor %}
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>
