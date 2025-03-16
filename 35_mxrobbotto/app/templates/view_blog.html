@@ -1,16 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ blog[1] }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h1>{{ blog[1] }}</h1>
-        <p>{{ blog[2][:10] }}</p> <!-- Extracting the date part from the datetime string -->
-        <p>{{ blog[3] }}</p>
-        <a href="{{ url_for('home') }}">Back to Home</a>
-    </div>
-</body>
-</html>
+<!--
+  # Java (Alex, Jonathan)
+  # SoftDev
+  # K35: Now Again for the First Time
+  # time spent: 4 hours
+ -->
+
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <title>{{ blog[1] }}</title>
+     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+ </head>
+ <body>
+     <nav>
+         <div class="navbar">
+             <a href="{{ url_for('home') }}">Home</a>
+             {% if session.user_id %}
+                 <a href="{{ url_for('create_blog') }}">Create Blog</a>
+                 <a href="{{ url_for('logout') }}">Logout</a>
+             {% else %}
+                 <a href="{{ url_for('login') }}">Login</a>
+                 <a href="{{ url_for('register') }}">Register</a>
+             {% endif %}
+         </div>
+     </nav>
+     <div class="container">
+         <h1>{{ blog[1] }}</h1>
+         <p class="date">{{ blog[2] }}</p>
+         <div class="content">{{ blog[3] }}</div>
+         <a class="btn" href="{{ url_for('home') }}">Back to Home</a>
+     </div>
+ </body>
+ </html>

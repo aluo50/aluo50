@@ -1,0 +1,188 @@
+Devo nation: jinja2.exceptions.UndefinedError: 'User' is undefined 
+Line 44 return render_template('home.html', user=user, blogs=blogs) is returning this error. How can I fix the error?
+
+AI:The error jinja2.exceptions.UndefinedError: 'User' is undefined occurs because the user variable is not properly defined or passed to the template in the home route when the user is not logged in. To fix this, ensure that the user variable is always defined and passed to the template, even when the user is not logged in.
+
+Here's the updated home route:
+
+@app.route('/')
+def home():
+    user = None
+    blogs = []
+    if 'user_id' in session:
+        conn = sqlite3.connect('weblog.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM User WHERE id = ?', (session['user_id'],))
+        user = cursor.fetchone()
+        cursor.execute('SELECT * FROM Blog WHERE user_id = ?', (session['user_id'],))
+        blogs = cursor.fetchall()
+        conn.close()
+    return render_template('home.html', user=user, blogs=blogs)
+
+This ensures that the user and blogs variables are always defined and passed to the home.html template, preventing the UndefinedError.
+
+With this change, the user variable will be None when the user is not logged in, and the blogs variable will be an empty list. This will prevent the UndefinedError and allow the template to render correctly in both logged-in and logged-out states.
+
+Devo nation: The home route still incorrectly defines 'User'. jinja2.exceptions.UndefinedError: 'User' is undefined
+
+{% for other_user in User.query.filter(User.id != user.id).all() %} produces the error above from the home template
+
+AI: The error jinja2.exceptions.UndefinedError: 'User' is undefined occurs because the User model is not available in the template context. In your current Flask setup, you are using raw SQLite queries, which do not directly provide the ORM functionality of SQLAlchemy.
+
+To resolve this issue, you need to update your code to properly query all users from the database and pass them to the template. Here's how you can modify your home route to include other users' data:
+
+First, fetch all users except the current logged-in user.
+Pass this list of other users to the template.
+Update the home route in your Flask app as follows:
+
+@app.route('/')
+def home():
+    user = None
+    blogs = []
+    other_users = []
+    if 'user_id' in session:
+        conn = sqlite3.connect('weblog.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM User WHERE id = ?', (session['user_id'],))
+        user = cursor.fetchone()
+        cursor.execute('SELECT * FROM Blog WHERE user_id = ?', (session['user_id'],))
+        blogs = cursor.fetchall()
+        
+        # Fetch all other users
+        cursor.execute('SELECT * FROM User WHERE id != ?', (session['user_id'],))
+        other_users = cursor.fetchall()
+        
+        conn.close()
+    return render_template('home.html', user=user, blogs=blogs, other_users=other_users)
+
+Next, update your home.html template to use the other_users variable:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Weblog</h1>
+        {% if user %}
+            <p>Hello, {{ user[1] }}!</p>
+            <a href="{{ url_for('create_blog') }}">Create Blog</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+            <h2>Your Blogs</h2>
+            {% for blog in blogs %}
+                <h3><a href="{{ url_for('view_blog', blog_id=blog[0]) }}">{{ blog[1] }}</a></h3>
+                <p>{{ blog[2] }}</p>
+                <a href="{{ url_for('edit_blog', blog_id=blog[0]) }}">Edit</a>
+            {% endfor %}
+            <h2>Other Users' Blogs</h2>
+            {% for other_user in other_users %}
+                <h3>{{ other_user[1] }}</h3>
+                <a href="{{ url_for('user_blogs', user_id=other_user[0]) }}">View Blogs</a>
+            {% endfor %}
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}">Register</a>
+        {% endif %}
+    </div>
+</body>
+</html>
+
+In this updated code:
+
+The home route now fetches all users except the current logged-in user and passes them as other_users to the template.
+The template is updated to iterate over other_users and display their usernames and links to view their blogs.
+Note: Since you are using raw SQLite queries, the user and blog data are returned as tuples. Adjust the index values (e.g., user[1] for username) accordingly in the template.
+
+Devo nation: jinja2.exceptions.UndefinedError: 'tuple object' has no attribute 'date_posted'
+
+arises from line 145 in view blog: return render_template('view_blog.html', blog=blog)
+
+AI:
+
+The error jinja2.exceptions.UndefinedError: 'tuple object' has no attribute 'date_posted' occurs because you are accessing blog.date_posted as if it were an attribute of an object, but it is actually a tuple returned from the SQLite query.
+
+To resolve this, you need to access the elements of the tuple using their indices. Here is the mapping for your Blog table:
+
+blog[0] -> id
+blog[1] -> title
+blog[2] -> date_posted
+blog[3] -> content
+blog[4] -> user_id
+Update the view_blog.html template to use these indices:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ blog[1] }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>{{ blog[1] }}</h1>
+        <p>{{ blog[2][:10] }}</p> <!-- Extracting the date part from the datetime string -->
+        <p>{{ blog[3] }}</p>
+        <a href="{{ url_for('home') }}">Back to Home</a>
+    </div>
+</body>
+</html>
+
+Devo nation: Please fix the login route such that it works. Also please make sure all users will be able to view all blogs (their own and other peoples blogs), and also, when a user edits his blogs, he should just be able to click edit on the entity of that blog he wants to edit. Also please add styling to the site in a styles.css - make a modern green and blue with box shadowing and a nav bar. Also make sure the routes work and are integrated correctly. 
+
+AI:
+
+Below is an example of a complete update to the project that addresses your requirements. In this solution we:
+
+• Fixed the login route so that the authentication works correctly.
+• Changed the blog routes so that every user (whether the author or not) sees all blog posts on the main view.
+• Updated the edit route so that when a user clicks “edit” on one of their own blogs the proper blog model (entity) is loaded for editing.
+• Added a new public CSS file (styles.css) that gives the site a modern green/blue color scheme with box shadows and a navigation bar.
+• Made sure all routes are integrated in the main application.
+
+Below are example files that you can use as a guide. (Adjust the database/model logic to your own backend setup if necessary.)
+
+const express = require('express');
+const session = require('express-session');
+const path = require('path');
+
+const app = express();
+
+// Middleware
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
+// Session setup (adjust secret and options as needed)
+app.use(session({
+  secret: 'yourSuperSecretSecret', 
+  resave: false,
+  saveUninitialized: true,
+}));
+
+// Set the view engine (assuming EJS)
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+// Static files
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Routes
+const loginRouter = require('./routes/login');
+const blogsRouter = require('./routes/blogs');
+
+app.use('/login', loginRouter);
+app.use('/blogs', blogsRouter);
+
+// Home route redirecting to blogs listing
+app.get('/', (req, res) => {
+  res.redirect('/blogs');
+});
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+

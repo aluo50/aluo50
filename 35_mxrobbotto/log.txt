@@ -3,9 +3,15 @@ DISCO:
 Q/C/C:
 some areas of interest...
 q0: It took a couple of major rewrites in order to make it conform to the project. From there it took some bug fixing and that was it
-q1: When running the app, the AI had incorrectly used tools like a cypher (which is funny because we didn't even ask the AI for a cypher). It took some extra prompts to get it right.
-q2: Pretty similar. I was surprised that the bot instantly upon first prompt created all of the HTML templates with similar names that we used on the project.
-c1: copilot wouldn't respond unless if I let it access public code
+q1: When running the app, the AI had incorrectly used tools like a cypher (which is funny because we didn't even ask the AI for a cypher). It took some extra prompts to get it right. 
+q2: Pretty similar. I was surprised that the bot instantly upon first prompt created all of the HTML templates with similar names that we used on the project. However, it was also somewhat different. The copilot app uses password hashes and allows non-logged in users to see the app. It also uses different keys for db values (i.e. int for blog entries instead of title). And copilot's app also uses Flask's flask() messages.
+c1: copilot wouldn't respond unless I let it access public code
 c2: copilot added multiline comment symbols around all generated code: ```[code]```
 c3: when sending a prompt with a large project/many requests (broad), copilot when typically fail to correctly address all points
-C4: told us to use SQLAlchemy and a cypher that didn't even work
+c4: told us to use SQLAlchemy and a cypher that didn't even work
+c5: creates an app.py when told to create an __init__.py 
+c6: uses code references from public repos 
+c7: detects vulnerabilities i.e. hardcoded credentials 
+c8: let's say: you prompt copilot to do three things, and it responds with two correct items, and one incorrect. If you ask copilot to fix that one misaccuracy, it will resend all three things (including the two correct ones).
+c9: copilot lets you see the verisions of your code (i.e. a file's different versions)
+c10: first time seeing database locked.

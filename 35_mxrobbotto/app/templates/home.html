@@ -1,30 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Home</title>
-<body>
-    <div class="container">
-        <h1>Welcome to the Weblog</h1>
-        {% if user %}
-            <p>Hello, {{ user[1] }}!</p>
-            <a href="{{ url_for('create_blog') }}">Create Blog</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
-            <h2>Your Blogs</h2>
-            {% for blog in blogs %}
-                <h3><a href="{{ url_for('view_blog', blog_id=blog[0]) }}">{{ blog[1] }}</a></h3>
-                <p>{{ blog[2] }}</p>
-                <a href="{{ url_for('edit_blog', blog_id=blog[0]) }}">Edit</a>
-            {% endfor %}
-            <h2>Other Users' Blogs</h2>
-            {% for other_user in other_users %}
-                <h3>{{ other_user[1] }}</h3>
-                <a href="{{ url_for('user_blogs', user_id=other_user[0]) }}">View Blogs</a>
-            {% endfor %}
-        {% else %}
-            <a href="{{ url_for('login') }}">Login</a>
-            <a href="{{ url_for('register') }}">Register</a>
-        {% endif %}
-    </div>
-</body>
-</html>
+<!--
+  # Java (Alex, Jonathan)
+  # SoftDev
+  # K35: Now Again for the First Time
+  # time spent: 4 hours
+ -->
+
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <title>Home - Weblog</title>
+     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+ </head>
+ <body>
+     <nav>
+         <div class="navbar">
+             <a href="{{ url_for('home') }}">Home</a>
+             {% if user %}
+                 <a href="{{ url_for('create_blog') }}">Create Blog</a>
+                 <a href="{{ url_for('logout') }}">Logout</a>
+             {% else %}
+                 <a href="{{ url_for('login') }}">Login</a>
+                 <a href="{{ url_for('register') }}">Register</a>
+             {% endif %}
+         </div>
+     </nav>
+     <div class="container">
+         <h1>Welcome to the Weblog</h1>
+         {% for blog in blogs %}
+             <div class="blog-card">
+                 <h3><a href="{{ url_for('view_blog', blog_id=blog[0]) }}">{{ blog[1] }}</a></h3>
+                 <p class="date">{{ blog[2] }}</p>
+                 <p>{{ blog[3][:150] }}{% if blog[3]|length > 150 %}...{% endif %}</p>
+                 {% if user and blog[4] == user[0] %}
+                     <a class="btn" href="{{ url_for('edit_blog', blog_id=blog[0]) }}">Edit</a>
+                 {% endif %}
+             </div>
+         {% endfor %}
+     </div>
+ </body>
+ </html>
