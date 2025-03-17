@@ -1,0 +1,395 @@
+Devo nation: create a flask app that is a weblog hosting site that allow users to register and login. Once they are logged in they will be able to create a new blog, update their blog by adding a new entry, view and edit their own past entry, and view the blogs of other users. They will not be able edit other users blogs. SQLite3 will serve as the backend data storage system. :
+AI:Below is the implementation of a Flask web application that meets the requirements specified:
+Below is the implementation of a Flask web application that meets the requirements specified:
+````markdown name=app.py
+```python
+from flask import Flask, render_template, redirect, url_for, request, session, flash
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'supersecretkey'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///weblog.db'
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), nullable=False, unique=True)
+    email = db.Column(db.String(150), nullable=False, unique=True)
+    password = db.Column(db.String(150), nullable=False)
+    blogs = db.relationship('Blog', backref='owner', lazy=True)
+
+class Blog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    content = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
+
+@app.route('/')
+def home():
+    if 'user_id' in session:
+        user = User.query.filter_by(id=session['user_id']).first()
+        return render_template('home.html', user=user)
+    return render_template('home.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+        hashed_password = generate_password_hash(password, method='sha256')
+        new_user = User(username=username, email=email, password=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+        session['user_id'] = new_user.id
+        return redirect(url_for('home'))
+    return render_template('register.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        user = User.query.filter_by(email=email).first()
+        if user and check_password_hash(user.password, password):
+            session['user_id'] = user.id
+            return redirect(url_for('home'))
+        flash('Login Unsuccessful. Please check email and password', 'danger')
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    return redirect(url_for('home'))
+
+@app.route('/create_blog', methods=['GET', 'POST'])
+def create_blog():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+        new_blog = Blog(title=title, content=content, user_id=session['user_id'])
+        db.session.add(new_blog)
+        db.session.commit()
+        return redirect(url_for('home'))
+    return render_template('create_blog.html')
+
+@app.route('/edit_blog/<int:blog_id>', methods=['GET', 'POST'])
+def edit_blog(blog_id):
+    blog = Blog.query.get_or_404(blog_id)
+    if blog.owner.id != session['user_id']:
+        return redirect(url_for('home'))
+    if request.method == 'POST':
+        blog.title = request.form['title']
+        blog.content = request.form['content']
+        db.session.commit()
+        return redirect(url_for('view_blog', blog_id=blog.id))
+    return render_template('edit_blog.html', blog=blog)
+
+@app.route('/view_blog/<int:blog_id>')
+def view_blog(blog_id):
+    blog = Blog.query.get_or_404(blog_id)
+    return render_template('view_blog.html', blog=blog)
+
+@app.route('/user_blogs/<int:user_id>')
+def user_blogs(user_id):
+    user = User.query.get_or_404(user_id)
+    return render_template('user_blogs.html', user=user)
+
+if __name__ == '__main__':
+    db.create_all()
+    app.run(debug=True)
+```
+````
+
+````markdown name=templates/home.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+    <h1>Welcome to the Weblog</h1>
+    {% if user %}
+        <p>Hello, {{ user.username }}!</p>
+        <a href="{{ url_for('create_blog') }}">Create Blog</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+        <h2>Your Blogs</h2>
+        {% for blog in user.blogs %}
+            <h3><a href="{{ url_for('view_blog', blog_id=blog.id) }}">{{ blog.title }}</a></h3>
+            <p>{{ blog.date_posted.strftime('%Y-%m-%d') }}</p>
+            <a href="{{ url_for('edit_blog', blog_id=blog.id) }}">Edit</a>
+        {% endfor %}
+        <h2>Other Users' Blogs</h2>
+        {% for other_user in User.query.filter(User.id != user.id).all() %}
+            <h3>{{ other_user.username }}</h3>
+            <a href="{{ url_for('user_blogs', user_id=other_user.id) }}">View Blogs</a>
+        {% endfor %}
+    {% else %}
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}">Register</a>
+    {% endif %}
+</body>
+</html>
+```
+````
+
+````markdown name=templates/register.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+</head>
+<body>
+    <h1>Register</h1>
+    <form method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+        <button type="submit">Register</button>
+    </form>
+</body>
+</html>
+```
+````
+
+````markdown name=templates/login.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <form method="post">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>
+```
+````
+
+````markdown name=templates/create_blog.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Blog</title>
+</head>
+<body>
+    <h1>Create Blog</h1>
+    <form method="post">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required><br>
+        <label for="content">Content:</label>
+        <textarea id="content" name="content" required></textarea><br>
+        <button type="submit">Create</button>
+    </form>
+</body>
+</html>
+```
+````
+
+````markdown name=templates/edit_blog.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Blog</title>
+</head>
+<body>
+    <h1>Edit Blog</h1>
+    <form method="post">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" value="{{ blog.title }}" required><br>
+        <label for="content">Content:</label>
+        <textarea id="content" name="content" required>{{ blog.content }}</textarea><br>
+        <button type="submit">Save</button>
+    </form>
+</body>
+</html>
+```
+````
+
+````markdown name=templates/view_blog.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ blog.title }}</title>
+</head>
+<body>
+    <h1>{{ blog.title }}</h1>
+    <p>{{ blog.date_posted.strftime('%Y-%m-%d') }}</p>
+    <p>{{ blog.content }}</p>
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>
+```
+````
+
+````markdown name=templates/user_blogs.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ user.username }}'s Blogs</title>
+</head>
+<body>
+    <h1>{{ user.username }}'s Blogs</h1>
+    {% for blog in user.blogs %}
+        <h3><a href="{{ url_for('view_blog', blog_id=blog.id) }}">{{ blog.title }}</a></h3>
+        <p>{{ blog.date_posted.strftime('%Y-%m-%d') }}</p>
+    {% endfor %}
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>
+```
+````
+This code sets up a Flask web application with user registration and login capabilities, along with the ability to create, edit, and view blogs. The SQLite database is used to store user information and blog data.
+Devo Nation: rewrite app.py so it uses SQLite3 and not SQL alchemy
+AI: Below is the rewritten app.py file to use SQLite3 directly instead of SQLAlchemy:
+
+
+app.py
+v2
+from flask import Flask, render_template, redirect, url_for, request, session, flash
+from werkzeug.security import generate_password_hash, check_password_hash
+import sqlite3
+from datetime import datetime
+
+ Public code references from 7 repositories
+ 2 vulnerabilities detected
+This version of app.py uses SQLite3 directly for database interactions, instead of using SQLAlchemy. The init_db function ensures the required tables are created if they don't already exist.
+Devo Nation: when running the app, I tried to register an account, and when i clicked register, it gave me the following error: ValueError: Invalid hash method 'sha256'. on line 53
+AI: The error ValueError: Invalid hash method 'sha256' indicates that the hash method specified in the generate_password_hash function is not recognized. The werkzeug.security library typically supports methods like pbkdf2:sha256.
+
+Let's update the code to use pbkdf2:sha256 instead of sha256.
+
+Here is the updated app.py:
+
+
+app.py
+v3
+from flask import Flask, render_template, redirect, url_for, request, session, flash
+from werkzeug.security import generate_password_hash, check_password_hash
+import sqlite3
+from datetime import datetime
+
+ Public code references from 7 repositories
+ 2 vulnerabilities detected
+Please try running the updated code and let me know if you encounter any other issues.
+Devo naton:jinja2.exceptions.UndefinedError: 'User' is undefined Line 44 return render_template('home.html', user=user, blogs=blogs) is returning this error. How can I fix the error?
+AI:The error jinja2.exceptions.UndefinedError: 'User' is undefined occurs because the user variable is not properly defined or passed to the template in the home route when the user is not logged in. To fix this, ensure that the user variable is always defined and passed to the template, even when the user is not logged in. -proceeds to send updated home route-
+Devo nation:sqlite3.IntegrityError: UNIQUE constraint failed: User.email Line 56 in register cursor.execute('INSERT INTO User (username, email, password) VALUES (?, ?, ?)', (username, email, hashed_password)) is returning an error. How can I fix this?
+AI:The error sqlite3.IntegrityError: UNIQUE constraint failed: User.email occurs because you are trying to insert a new user with an email that already exists in the database, which violates the UNIQUE constraint on the email column. -proceeds to fix register route-
+Devo nation:jinja2.exceptions.UndefinedError: 'User' is undefined {% for other_user in User.query.filter(User.id != user.id).all() %} produces the error above from the home template
+AI:The error jinja2.exceptions.UndefinedError: 'User' is undefined occurs because the User model is not available in the template context. In your current Flask setup, you are using raw SQLite queries, which do not directly provide the ORM functionality of SQLAlchemy. -proceeds to fix home once again-
+Devo nation: error arises from line 145 in view blog: return render_template('view_blog.html', blog=blog)
+AI:The error jinja2.exceptions.UndefinedError: 'tuple object' has no attribute 'date_posted' occurs because you are accessing blog.date_posted as if it were an attribute of an object, but it is actually a tuple returned from the SQLite query. -proceeds to fix view_blog-
+Devo nationL create a readme.md file for this project
+AI: ````markdown name=README.md
+# Weblog Hosting Site
+
+This is a Flask-based web application that allows users to register, log in, and create blogs. Users can create new blog entries, update their blogs by adding new entries, view and edit their own past entries, and view the blogs of other users. Users cannot edit the blogs of other users. SQLite3 is used as the backend data storage system.
+
+## Features
+- User Registration
+- User Login and Logout
+- Create new blog entries
+- Edit and update own blog entries
+- View own past blog entries
+- View blogs of other users
+
+## Installation
+
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/Altaccount595/weblog-hosting-site.git
+    cd weblog-hosting-site
+    ```
+
+2. Create and activate a virtual environment:
+    ```sh
+    python3 -m venv venv
+    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    ```
+
+3. Install the required packages:
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+4. Initialize the SQLite3 database:
+    ```sh
+    python app.py
+    ```
+
+## Usage
+
+1. Run the Flask application:
+    ```sh
+    python app.py
+    ```
+
+2. Open your web browser and go to `http://127.0.0.1:5000/`
+
+3. Register a new account or log in with an existing account.
+
+4. Create, edit, and view blog entries.
+
+## Project Structure
+
+```
+weblog-hosting-site/
+│
+├── templates/
+│   ├── create_blog.html
+│   ├── edit_blog.html
+│   ├── home.html
+│   ├── login.html
+│   ├── register.html
+│   ├── user_blogs.html
+│   └── view_blog.html
+│
+├── app.py
+└── README.md
+```
+
+## Dependencies
+
+- Flask
+- Werkzeug
+- SQLite3
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- Flask documentation: https://flask.palletsprojects.com/
+- SQLite documentation: https://www.sqlite.org/docs.html
+- Werkzeug documentation: https://werkzeug.palletsprojects.com/
+````
