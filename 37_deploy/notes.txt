@@ -1,0 +1,10 @@
+Goal: Deploy first app
+
+Notes: 
+- Wheel is a built-package format, and offers the advantage of not recompiling your software during every install
+- uWSGI is an open source software application that "aims at developing a full stack for building hosting services"
+- Socket specifies where uWSGI should listen for port connections
+- No python application found error -> Wrong code in file
+- systemd unit file is plain text that encodes information about a service, a socket, a device, etc
+- The `chgrp` command in Linux is used to change the group ownership of a file or directory
+- Certbot is used to "secure" your website and change the http:// tag to https://
