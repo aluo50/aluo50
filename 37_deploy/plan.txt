@@ -3,5 +3,5 @@ Plan:
 2. Follow the steps while taking notes on PM VK's machine first
 3. Repeat for other Devos
 4. (optional) Create a domain name and complete steps 6-7 on the DigitalOcean tutorial
-    a. Plans to provision domain name: DAW
-    b. Does not plan to provision domain name: DAL, DVK, DJM
+    a. Plans to provision domain name: DAW, DAL, DVK
+    b. Does not plan to provision domain name: DJM
